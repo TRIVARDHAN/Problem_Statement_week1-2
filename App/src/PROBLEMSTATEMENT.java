@@ -1,38 +1,47 @@
 import java.util.*;
 
-class Entry{
-    String ip;
-    long expiry;
+class Plagiarism {
 
-    Entry(String ip,long ttl){
-        this.ip=ip;
-        expiry=System.currentTimeMillis()+ttl;
+    HashMap<String,Set<String>> index=new HashMap<>();
+
+    List<String> ngrams(String text){
+
+        String[] w=text.split(" ");
+        List<String> list=new ArrayList<>();
+
+        for(int i=0;i<w.length-2;i++)
+            list.add(w[i]+" "+w[i+1]+" "+w[i+2]);
+
+        return list;
     }
-}
 
-class DNSCache{
+    void addDoc(String id,String text){
 
-    HashMap<String,Entry> cache=new HashMap<>();
+        for(String g:ngrams(text)){
+            index.putIfAbsent(g,new HashSet<>());
+            index.get(g).add(id);
+        }
+    }
 
-    String resolve(String domain){
+    int check(String text){
 
-        Entry e=cache.get(domain);
+        int match=0;
 
-        if(e!=null && e.expiry>System.currentTimeMillis())
-            return "Cache HIT "+e.ip;
+        for(String g:ngrams(text))
+            if(index.containsKey(g))
+                match++;
 
-        String ip="172.217.14."+new Random().nextInt(200);
-
-        cache.put(domain,new Entry(ip,5000));
-
-        return "Cache MISS -> "+ip;
+        return match;
     }
 
     public static void main(String[] args){
 
-        DNSCache d=new DNSCache();
+        Plagiarism p=new Plagiarism();
 
-        System.out.println(d.resolve("google.com"));
-        System.out.println(d.resolve("google.com"));
+        p.addDoc("doc1","java is a programming language");
+
+        int m=p.check("java is a powerful programming language");
+
+        System.out.println("Matching ngrams: "+m);
     }
 }
