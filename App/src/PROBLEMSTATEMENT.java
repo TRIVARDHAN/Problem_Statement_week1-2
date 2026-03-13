@@ -1,31 +1,32 @@
 import java.util.*;
 
-class RateLimiter{
+class AutoComplete{
 
-    HashMap<String,Integer> map=new HashMap<>();
-    int limit=3;
+    HashMap<String,Integer> freq=new HashMap<>();
 
-    boolean check(String client){
+    void add(String q){
+        freq.put(q,freq.getOrDefault(q,0)+1);
+    }
 
-        map.putIfAbsent(client,limit);
+    List<String> search(String prefix){
 
-        int tokens=map.get(client);
+        List<String> res=new ArrayList<>();
 
-        if(tokens>0){
-            map.put(client,tokens-1);
-            return true;
-        }
+        for(String s:freq.keySet())
+            if(s.startsWith(prefix))
+                res.add(s);
 
-        return false;
+        return res;
     }
 
     public static void main(String[] args){
 
-        RateLimiter r=new RateLimiter();
+        AutoComplete a=new AutoComplete();
 
-        System.out.println(r.check("client1"));
-        System.out.println(r.check("client1"));
-        System.out.println(r.check("client1"));
-        System.out.println(r.check("client1"));
+        a.add("java tutorial");
+        a.add("javascript");
+        a.add("java download");
+
+        System.out.println(a.search("jav"));
     }
 }
