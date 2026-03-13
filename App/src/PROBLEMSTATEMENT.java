@@ -1,27 +1,26 @@
-class Parking{
+import java.util.*;
 
-    String[] table=new String[10];
+class TwoSum{
 
-    int hash(String plate){
-        return Math.abs(plate.hashCode())%table.length;
-    }
+    static void find(int[] arr,int target){
 
-    int park(String plate){
+        HashMap<Integer,Integer> map=new HashMap<>();
 
-        int i=hash(plate);
+        for(int x:arr){
 
-        while(table[i]!=null)
-            i=(i+1)%table.length;
+            int c=target-x;
 
-        table[i]=plate;
-        return i;
+            if(map.containsKey(c))
+                System.out.println(c+" + "+x+" = "+target);
+
+            map.put(x,1);
+        }
     }
 
     public static void main(String[] args){
 
-        Parking p=new Parking();
+        int[] t={500,300,200};
 
-        System.out.println("Spot "+p.park("ABC123"));
-        System.out.println("Spot "+p.park("XYZ999"));
+        find(t,500);
     }
 }
