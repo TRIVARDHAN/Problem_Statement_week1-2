@@ -1,26 +1,29 @@
 import java.util.*;
 
-class TwoSum{
+class MultiCache{
 
-    static void find(int[] arr,int target){
+    HashMap<String,String> L1=new HashMap<>();
+    HashMap<String,String> L2=new HashMap<>();
 
-        HashMap<Integer,Integer> map=new HashMap<>();
+    String get(String id){
 
-        for(int x:arr){
+        if(L1.containsKey(id))
+            return "L1 HIT";
 
-            int c=target-x;
-
-            if(map.containsKey(c))
-                System.out.println(c+" + "+x+" = "+target);
-
-            map.put(x,1);
+        if(L2.containsKey(id)){
+            L1.put(id,L2.get(id));
+            return "L2 HIT -> promoted";
         }
+
+        L2.put(id,"VideoData");
+        return "DB HIT";
     }
 
     public static void main(String[] args){
 
-        int[] t={500,300,200};
+        MultiCache c=new MultiCache();
 
-        find(t,500);
+        System.out.println(c.get("video1"));
+        System.out.println(c.get("video1"));
     }
 }
