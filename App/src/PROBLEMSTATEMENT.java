@@ -1,35 +1,38 @@
 import java.util.*;
 
-class FlashSale {
+class Entry{
+    String ip;
+    long expiry;
 
-    HashMap<String,Integer> stock=new HashMap<>();
-    Queue<Integer> waiting=new LinkedList<>();
+    Entry(String ip,long ttl){
+        this.ip=ip;
+        expiry=System.currentTimeMillis()+ttl;
+    }
+}
 
-    void addProduct(String id,int qty){
-        stock.put(id,qty);
+class DNSCache{
+
+    HashMap<String,Entry> cache=new HashMap<>();
+
+    String resolve(String domain){
+
+        Entry e=cache.get(domain);
+
+        if(e!=null && e.expiry>System.currentTimeMillis())
+            return "Cache HIT "+e.ip;
+
+        String ip="172.217.14."+new Random().nextInt(200);
+
+        cache.put(domain,new Entry(ip,5000));
+
+        return "Cache MISS -> "+ip;
     }
 
-    String purchase(String id,int user){
+    public static void main(String[] args){
 
-        int s=stock.get(id);
+        DNSCache d=new DNSCache();
 
-        if(s>0){
-            stock.put(id,s-1);
-            return "Success, remaining "+(s-1);
-        }
-
-        waiting.add(user);
-        return "Added to waiting list position "+waiting.size();
-    }
-
-    public static void main(String[] args) {
-
-        FlashSale f=new FlashSale();
-
-        f.addProduct("IPHONE15",2);
-
-        System.out.println(f.purchase("IPHONE15",101));
-        System.out.println(f.purchase("IPHONE15",102));
-        System.out.println(f.purchase("IPHONE15",103));
+        System.out.println(d.resolve("google.com"));
+        System.out.println(d.resolve("google.com"));
     }
 }
