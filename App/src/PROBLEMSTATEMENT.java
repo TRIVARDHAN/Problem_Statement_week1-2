@@ -1,45 +1,35 @@
 import java.util.*;
 
-class UsernameChecker {
+class FlashSale {
 
-    HashMap<String,Integer> users = new HashMap<>();
-    HashMap<String,Integer> attempts = new HashMap<>();
+    HashMap<String,Integer> stock=new HashMap<>();
+    Queue<Integer> waiting=new LinkedList<>();
 
-    boolean checkAvailability(String username){
-        attempts.put(username,attempts.getOrDefault(username,0)+1);
-        return !users.containsKey(username);
+    void addProduct(String id,int qty){
+        stock.put(id,qty);
     }
 
-    void register(String username,int id){
-        users.put(username,id);
-    }
+    String purchase(String id,int user){
 
-    List<String> suggest(String username){
-        List<String> list = new ArrayList<>();
+        int s=stock.get(id);
 
-        for(int i=1;i<=3;i++){
-            String s=username+i;
-            if(!users.containsKey(s))
-                list.add(s);
+        if(s>0){
+            stock.put(id,s-1);
+            return "Success, remaining "+(s-1);
         }
 
-        return list;
-    }
-
-    String mostAttempted(){
-        return Collections.max(attempts.entrySet(),
-                Map.Entry.comparingByValue()).getKey();
+        waiting.add(user);
+        return "Added to waiting list position "+waiting.size();
     }
 
     public static void main(String[] args) {
 
-        UsernameChecker u=new UsernameChecker();
+        FlashSale f=new FlashSale();
 
-        u.register("john_doe",1);
+        f.addProduct("IPHONE15",2);
 
-        System.out.println("john_doe available? "+u.checkAvailability("john_doe"));
-        System.out.println("jane_smith available? "+u.checkAvailability("jane_smith"));
-
-        System.out.println("Suggestions: "+u.suggest("john_doe"));
+        System.out.println(f.purchase("IPHONE15",101));
+        System.out.println(f.purchase("IPHONE15",102));
+        System.out.println(f.purchase("IPHONE15",103));
     }
 }
