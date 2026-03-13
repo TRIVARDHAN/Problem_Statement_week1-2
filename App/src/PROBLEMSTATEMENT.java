@@ -1,36 +1,31 @@
 import java.util.*;
 
-class Analytics {
+class RateLimiter{
 
-    HashMap<String,Integer> views=new HashMap<>();
-    HashMap<String,Set<String>> visitors=new HashMap<>();
-    HashMap<String,Integer> source=new HashMap<>();
+    HashMap<String,Integer> map=new HashMap<>();
+    int limit=3;
 
-    void event(String url,String user,String src){
+    boolean check(String client){
 
-        views.put(url,views.getOrDefault(url,0)+1);
+        map.putIfAbsent(client,limit);
 
-        visitors.putIfAbsent(url,new HashSet<>());
-        visitors.get(url).add(user);
+        int tokens=map.get(client);
 
-        source.put(src,source.getOrDefault(src,0)+1);
-    }
+        if(tokens>0){
+            map.put(client,tokens-1);
+            return true;
+        }
 
-    void show(){
-
-        System.out.println("Views "+views);
-        System.out.println("Unique "+visitors);
-        System.out.println("Sources "+source);
+        return false;
     }
 
     public static void main(String[] args){
 
-        Analytics a=new Analytics();
+        RateLimiter r=new RateLimiter();
 
-        a.event("/news","user1","google");
-        a.event("/news","user2","facebook");
-        a.event("/sports","user1","direct");
-
-        a.show();
+        System.out.println(r.check("client1"));
+        System.out.println(r.check("client1"));
+        System.out.println(r.check("client1"));
+        System.out.println(r.check("client1"));
     }
 }
