@@ -1,32 +1,27 @@
-import java.util.*;
+class Parking{
 
-class AutoComplete{
+    String[] table=new String[10];
 
-    HashMap<String,Integer> freq=new HashMap<>();
-
-    void add(String q){
-        freq.put(q,freq.getOrDefault(q,0)+1);
+    int hash(String plate){
+        return Math.abs(plate.hashCode())%table.length;
     }
 
-    List<String> search(String prefix){
+    int park(String plate){
 
-        List<String> res=new ArrayList<>();
+        int i=hash(plate);
 
-        for(String s:freq.keySet())
-            if(s.startsWith(prefix))
-                res.add(s);
+        while(table[i]!=null)
+            i=(i+1)%table.length;
 
-        return res;
+        table[i]=plate;
+        return i;
     }
 
     public static void main(String[] args){
 
-        AutoComplete a=new AutoComplete();
+        Parking p=new Parking();
 
-        a.add("java tutorial");
-        a.add("javascript");
-        a.add("java download");
-
-        System.out.println(a.search("jav"));
+        System.out.println("Spot "+p.park("ABC123"));
+        System.out.println("Spot "+p.park("XYZ999"));
     }
 }
