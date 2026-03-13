@@ -1,47 +1,36 @@
 import java.util.*;
 
-class Plagiarism {
+class Analytics {
 
-    HashMap<String,Set<String>> index=new HashMap<>();
+    HashMap<String,Integer> views=new HashMap<>();
+    HashMap<String,Set<String>> visitors=new HashMap<>();
+    HashMap<String,Integer> source=new HashMap<>();
 
-    List<String> ngrams(String text){
+    void event(String url,String user,String src){
 
-        String[] w=text.split(" ");
-        List<String> list=new ArrayList<>();
+        views.put(url,views.getOrDefault(url,0)+1);
 
-        for(int i=0;i<w.length-2;i++)
-            list.add(w[i]+" "+w[i+1]+" "+w[i+2]);
+        visitors.putIfAbsent(url,new HashSet<>());
+        visitors.get(url).add(user);
 
-        return list;
+        source.put(src,source.getOrDefault(src,0)+1);
     }
 
-    void addDoc(String id,String text){
+    void show(){
 
-        for(String g:ngrams(text)){
-            index.putIfAbsent(g,new HashSet<>());
-            index.get(g).add(id);
-        }
-    }
-
-    int check(String text){
-
-        int match=0;
-
-        for(String g:ngrams(text))
-            if(index.containsKey(g))
-                match++;
-
-        return match;
+        System.out.println("Views "+views);
+        System.out.println("Unique "+visitors);
+        System.out.println("Sources "+source);
     }
 
     public static void main(String[] args){
 
-        Plagiarism p=new Plagiarism();
+        Analytics a=new Analytics();
 
-        p.addDoc("doc1","java is a programming language");
+        a.event("/news","user1","google");
+        a.event("/news","user2","facebook");
+        a.event("/sports","user1","direct");
 
-        int m=p.check("java is a powerful programming language");
-
-        System.out.println("Matching ngrams: "+m);
+        a.show();
     }
 }
